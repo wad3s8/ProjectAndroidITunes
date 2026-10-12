@@ -1,3 +1,30 @@
 <resources>
-    <string name="app_name">Project Android</string>
+    <string name="app_name">iTunes Каталог</string>
+    <string name="music">Музыка</string>
+    <string name="favorites">Избранное</string>
+    <string name="settings">Настройки</string>
+    <string name="catalog_eyebrow">ITUNES · КАТАЛОГ</string>
+    <string name="catalog_subtitle">Знакомые мелодии. Новые открытия.</string>
+    <string name="collection_description">Два альбома французского электронного дуэта</string>
+    <string name="track_count">%1$d треков · Демо-каталог</string>
+    <string name="all_tracks">Все треки</string>
+    <string name="track_details">О треке</string>
+    <string name="back">Назад</string>
+    <string name="track_not_found">Трек не найден</string>
+    <string name="song_badge">ПЕСНЯ · ДЕМО</string>
+    <string name="duration">Длительность</string>
+    <string name="price">Цена трека</string>
+    <string name="about_track">Информация</string>
+    <string name="genre">Жанр</string>
+    <string name="release_date">Дата релиза</string>
+    <string name="album_number">Номер в альбоме</string>
+    <string name="track_position">%1$d из %2$d</string>
+    <string name="store_country">Регион магазина</string>
+    <string name="content_rating">Контент</string>
+    <string name="explicit_content">Есть ненормативная лексика</string>
+    <string name="clean_content">Без ненормативной лексики</string>
+    <string name="demo_notice">Демонстрационные данные и условные обложки. Цены приведены для примера.</string>
+    <string name="favorites_later">Здесь появятся любимые треки. Раздел будет доступен в следующей практике.</string>
+    <string name="settings_later">Здесь появятся настройки приложения. Раздел будет доступен в следующей практике.</string>
 </resources>
+
