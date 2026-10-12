@@ -17,7 +17,9 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import com.example.projectandroid.R
-import com.example.projectandroid.data.MockTrackRepository
+import com.example.projectandroid.AppContainer
+import com.example.projectandroid.domain.SearchTracksUseCase
+import com.example.projectandroid.domain.GetTrackUseCase
 
 private enum class Tab(val route: String, val label: Int, val icon: Int) {
     Music("music", R.string.music, R.drawable.ic_music),
@@ -26,7 +28,10 @@ private enum class Tab(val route: String, val label: Int, val icon: Int) {
 }
 
 @Composable
-fun MusicApp() {
+fun MusicApp(
+    searchTracks: SearchTracksUseCase = AppContainer.searchTracks,
+    getTrack: GetTrackUseCase = AppContainer.getTrack,
+) {
     val navController = rememberNavController()
     val entry by navController.currentBackStackEntryAsState()
     Scaffold(
@@ -53,20 +58,20 @@ fun MusicApp() {
             navigation(startDestination = "catalog", route = Tab.Music.route) {
                 composable("catalog") {
                     val model: CatalogViewModel = viewModel(factory = viewModelFactory {
-                        initializer { CatalogViewModel(MockTrackRepository) }
+                        initializer { CatalogViewModel(searchTracks, createSavedStateHandle()) }
                     })
                     val state by model.uiState.collectAsStateWithLifecycle()
-                    CatalogScreen(state) { id -> navController.navigate("track/$id") }
+                    CatalogScreen(state, model::changeQuery, model::search, model::retry) { id -> navController.navigate("track/$id") }
                 }
                 composable(
                     "track/{trackId}",
                     arguments = listOf(navArgument("trackId") { type = NavType.LongType }),
                 ) {
                     val model: DetailsViewModel = viewModel(factory = viewModelFactory {
-                        initializer { DetailsViewModel(MockTrackRepository, createSavedStateHandle()) }
+                        initializer { DetailsViewModel(getTrack, createSavedStateHandle()) }
                     })
                     val state by model.uiState.collectAsStateWithLifecycle()
-                    DetailsScreen(state, onBack = { navController.popBackStack() })
+                    DetailsScreen(state, onBack = { navController.popBackStack() }, onRetry = model::retry)
                 }
             }
             composable(Tab.Favorites.route) {
