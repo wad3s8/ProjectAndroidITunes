@@ -27,10 +27,17 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.example.projectandroid.R
-import com.example.projectandroid.data.Track
+import com.example.projectandroid.domain.Track
+import com.example.projectandroid.domain.FailureReason
 
 @Composable
-fun CatalogScreen(state: CatalogUiState, onTrackClick: (Long) -> Unit) {
+fun CatalogScreen(
+    state: CatalogUiState,
+    onQueryChange: (String) -> Unit,
+    onSearch: () -> Unit,
+    onRetry: () -> Unit,
+    onTrackClick: (Long) -> Unit,
+) {
     LazyColumn(
         state = rememberLazyListState(),
         contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 24.dp, bottom = 24.dp),
@@ -50,11 +57,28 @@ fun CatalogScreen(state: CatalogUiState, onTrackClick: (Long) -> Unit) {
         item(key = "collection") {
             Surface(shape = RoundedCornerShape(24.dp), color = MaterialTheme.colorScheme.primaryContainer) {
                 Column(Modifier.fillMaxWidth().padding(22.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("DAFT PUNK", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
+                    Text(state.submittedQuery, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
                     Text(stringResource(R.string.collection_description), style = MaterialTheme.typography.bodyMedium)
                     Text(stringResource(R.string.track_count, state.tracks.size),
                         style = MaterialTheme.typography.labelLarge)
                 }
+            }
+        }
+        item(key = "search") {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(value = state.query, onValueChange = onQueryChange,
+                    label = { Text(stringResource(R.string.search_hint)) }, singleLine = true,
+                    modifier = Modifier.fillMaxWidth().testTag("search_input"))
+                Button(onClick = onSearch, enabled = state.query.isNotBlank() && !state.isLoading) {
+                    Text(stringResource(R.string.search))
+                }
+            }
+        }
+        item(key = "status") {
+            when {
+                state.isLoading -> LoadingIndicator()
+                state.error != null -> ErrorMessage(state.error, onRetry)
+                state.tracks.isEmpty() -> Text(stringResource(R.string.empty_results))
             }
         }
         item(key = "list_title") {
@@ -117,7 +141,7 @@ private fun AlbumArtwork(track: Track, modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailsScreen(state: DetailsUiState, onBack: () -> Unit) {
+fun DetailsScreen(state: DetailsUiState, onBack: () -> Unit, onRetry: () -> Unit) {
     Column(Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text(stringResource(R.string.track_details)) },
@@ -129,11 +153,37 @@ fun DetailsScreen(state: DetailsUiState, onBack: () -> Unit) {
             windowInsets = WindowInsets(0, 0, 0, 0),
         )
         when (state) {
+            DetailsUiState.Loading -> LoadingIndicator()
+            is DetailsUiState.Error -> ErrorMessage(state.reason, onRetry)
             DetailsUiState.NotFound -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(stringResource(R.string.track_not_found))
             }
             is DetailsUiState.Content -> TrackDetails(state.track)
         }
+    }
+}
+
+@Composable
+private fun LoadingIndicator() {
+    Column(Modifier.fillMaxWidth().padding(24.dp).testTag("loading"),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        CircularProgressIndicator()
+        Text(stringResource(R.string.loading))
+    }
+}
+
+@Composable
+private fun ErrorMessage(reason: FailureReason, onRetry: () -> Unit) {
+    Column(Modifier.fillMaxWidth().padding(24.dp).testTag("network_error"),
+        verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(stringResource(when (reason) {
+            FailureReason.Connection -> R.string.connection_error
+            FailureReason.Server -> R.string.server_error
+            FailureReason.RateLimit -> R.string.rate_limit_error
+            FailureReason.InvalidResponse -> R.string.response_error
+        }))
+        Button(onClick = onRetry) { Text(stringResource(R.string.retry)) }
     }
 }
 
