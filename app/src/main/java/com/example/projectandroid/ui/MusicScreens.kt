@@ -92,7 +92,7 @@ fun CatalogScreen(
 }
 
 @Composable
-private fun TrackRow(track: Track, onClick: () -> Unit) {
+internal fun TrackRow(track: Track, onClick: () -> Unit) {
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(18.dp),
@@ -141,10 +141,20 @@ private fun AlbumArtwork(track: Track, modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailsScreen(state: DetailsUiState, onBack: () -> Unit, onRetry: () -> Unit) {
+fun DetailsScreen(
+    state: DetailsUiState, onBack: () -> Unit, onRetry: () -> Unit,
+    isFavorite: Boolean? = null, onFavoriteClick: (Track) -> Unit = {},
+) {
     Column(Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text(stringResource(R.string.track_details)) },
+            actions = {
+                if (state is DetailsUiState.Content && isFavorite != null) {
+                    TextButton(onClick = { onFavoriteClick(state.track) }) {
+                        Text(stringResource(if (isFavorite) R.string.remove_favorite else R.string.add_favorite))
+                    }
+                }
+            },
             navigationIcon = {
                 IconButton(onClick = onBack) {
                     Icon(painterResource(R.drawable.ic_back), stringResource(R.string.back))
@@ -282,24 +292,3 @@ private fun Metadata(label: String, value: String) {
         Text(value, style = MaterialTheme.typography.bodyLarge)
     }
 }
-
-@Composable
-fun PlaceholderScreen(title: Int, description: Int, icon: Int) {
-    Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(28.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Surface(shape = RoundedCornerShape(24.dp), color = MaterialTheme.colorScheme.primaryContainer) {
-            Icon(painterResource(icon), null, Modifier.padding(24.dp).size(40.dp),
-                tint = MaterialTheme.colorScheme.onPrimaryContainer)
-        }
-        Spacer(Modifier.height(24.dp))
-        Text(stringResource(title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Spacer(Modifier.height(12.dp))
-        Text(stringResource(description), style = MaterialTheme.typography.bodyLarge,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
-}
-

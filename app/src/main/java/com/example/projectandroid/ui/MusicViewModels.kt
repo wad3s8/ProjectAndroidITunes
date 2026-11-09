@@ -1,5 +1,6 @@
 package com.example.projectandroid.ui
 
+import com.example.projectandroid.data.CatalogFilters
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,6 +21,7 @@ data class CatalogUiState(
 class CatalogViewModel(
     private val searchTracks: SearchTracksUseCase,
     private val savedStateHandle: SavedStateHandle = SavedStateHandle(),
+    private var filters: CatalogFilters = CatalogFilters(),
 ) : ViewModel() {
     private val state = MutableStateFlow(CatalogUiState(
         query = savedStateHandle["query"] ?: "Daft Punk",
@@ -28,6 +30,11 @@ class CatalogViewModel(
     val uiState = state.asStateFlow()
     private var searchJob: Job? = null
     init { load(state.value.submittedQuery) }
+
+    fun applyFilters(value: CatalogFilters) {
+        filters = value
+        retry()
+    }
 
     fun changeQuery(query: String) {
         savedStateHandle["query"] = query
@@ -44,7 +51,7 @@ class CatalogViewModel(
         state.value = state.value.copy(submittedQuery = term, tracks = emptyList(), isLoading = true, error = null)
         searchJob = viewModelScope.launch {
             try {
-                val tracks = searchTracks(term)
+                val tracks = searchTracks(term).filter(filters::matches)
                 state.value = state.value.copy(tracks = tracks, isLoading = false)
             } catch (error: CancellationException) { throw error }
             catch (error: Exception) {
