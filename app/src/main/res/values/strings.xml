@@ -24,15 +24,22 @@
     <string name="explicit_content">Есть ненормативная лексика</string>
     <string name="clean_content">Без ненормативной лексики</string>
     <string name="demo_notice">Данные iTunes Store (США). Обложки — декоративные иллюстрации.</string>
-    <string name="favorites_later">Здесь появятся любимые треки. Раздел будет доступен в следующей практике.</string>
-    <string name="settings_later">Здесь появятся настройки приложения. Раздел будет доступен в следующей практике.</string>
+    <string name="filters">Фильтры каталога</string>
+    <string name="active_filters">Применены фильтры</string>
+    <string name="hide_explicit">Скрыть треки с пометкой Explicit</string>
+    <string name="done">Готово</string>
+    <string name="reset">Сбросить</string>
+    <string name="add_favorite">В избранное</string>
+    <string name="remove_favorite">Убрать из избранного</string>
+    <string name="empty_favorites">Пока нет избранных треков. Откройте трек и нажмите «В избранное».</string>
     <string name="search_hint">Исполнитель или название трека</string>
     <string name="search">Найти</string>
     <string name="loading">Загрузка…</string>
     <string name="retry">Повторить</string>
-    <string name="empty_results">Ничего не найдено. Измените поисковый запрос.</string>
+    <string name="empty_results">Ничего не найдено. Измените запрос или фильтры.</string>
     <string name="connection_error">Не удалось подключиться. Проверьте интернет и повторите запрос.</string>
     <string name="server_error">Сервис iTunes недоступен. Попробуйте позже.</string>
     <string name="rate_limit_error">Слишком много запросов. Подождите минуту и повторите.</string>
     <string name="response_error">Не удалось прочитать ответ iTunes. Попробуйте ещё раз.</string>
+    <string name="favorite_write_error">Не удалось сохранить изменение. Попробуйте ещё раз.</string>
 </resources>
