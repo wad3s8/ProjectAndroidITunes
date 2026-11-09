@@ -1,4 +1,5 @@
 <resources>
+    <string name="profile">Профиль</string>
     <string name="app_name">iTunes Каталог</string>
     <string name="music">Музыка</string>
     <string name="favorites">Избранное</string>

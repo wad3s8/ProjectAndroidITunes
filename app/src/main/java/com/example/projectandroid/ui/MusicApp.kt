@@ -33,6 +33,7 @@ private enum class Tab(val route: String, val label: Int, val icon: Int) {
     Music("music", R.string.music, R.drawable.ic_music),
     Favorites("favorites", R.string.favorites, R.drawable.ic_heart),
     Settings("settings", R.string.settings, R.drawable.ic_settings),
+    Profile("profile", R.string.profile, R.drawable.ic_profile),
 }
 
 @Composable
@@ -44,6 +45,9 @@ fun MusicApp(
     val entry by navController.currentBackStackEntryAsState()
     val application = LocalContext.current.applicationContext as MusicApplication
     val cache = application.filters
+    val profile: ProfileViewModel = viewModel(factory = viewModelFactory {
+        initializer { ProfileViewModel(application.profiles, createSavedStateHandle()) }
+    })
     val filters by cache.applied.collectAsStateWithLifecycle()
     val catalog: CatalogViewModel = viewModel(factory = viewModelFactory {
         initializer { CatalogViewModel(searchTracks, createSavedStateHandle(), cache.applied.value) }
@@ -64,7 +68,7 @@ fun MusicApp(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbar) },
         bottomBar = {
-            NavigationBar {
+            if (entry?.destination?.route != Tab.Profile.route || !profile.editing) NavigationBar {
                 Tab.entries.forEach { tab ->
                     NavigationBarItem(
                         selected = entry?.destination?.hierarchy?.any { it.route == tab.route } == true,
@@ -129,6 +133,7 @@ fun MusicApp(
                         })
                 }
             }
+            composable(Tab.Profile.route) { ProfileScreen(profile) }
             composable(Tab.Settings.route) {
                 FiltersScreen(filters) { draft ->
                     cache.apply(draft)

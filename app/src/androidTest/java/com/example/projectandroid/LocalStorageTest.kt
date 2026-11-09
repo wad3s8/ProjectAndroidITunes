@@ -33,14 +33,16 @@ class LocalStorageTest {
     }
 
     @Test fun favoriteIsUniqueAndCanBeReadAfterReopeningDatabase() = runBlocking {
-        FavoritesDatabase(context).use { db ->
-            db.setFavorite(track, true)
-            db.setFavorite(track, true)
-        }
-        FavoritesDatabase(context).use { db ->
-            assertEquals(listOf(track), db.tracks.first().filter { it.trackId == track.trackId })
-            db.setFavorite(track, false)
-            assertFalse(db.tracks.first().any { it.trackId == track.trackId })
-        }
+        val writer = FavoritesDatabase(context)
+        try {
+            writer.setFavorite(track, true)
+            writer.setFavorite(track, true)
+        } finally { writer.close() }
+        val reader = FavoritesDatabase(context)
+        try {
+            assertEquals(listOf(track), reader.tracks.first().filter { it.trackId == track.trackId })
+            reader.setFavorite(track, false)
+            assertFalse(reader.tracks.first().any { it.trackId == track.trackId })
+        } finally { reader.close() }
     }
 }
