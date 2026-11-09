@@ -1,10 +1,6 @@
-package com.example.projectandroid.data
+package com.example.projectandroid.domain
 
-/**
- * Fields correspond to iTunes Search/Lookup results with kind = song.
- * Optional store metadata can be absent in a future API response.
- * URLs are reserved for the later network practice; artwork is local for now.
- */
+/** A music track independent of transport and presentation. */
 data class Track(
     val trackId: Long,
     val trackName: String,
@@ -23,4 +19,3 @@ data class Track(
     val previewUrl: String? = null,
     val trackViewUrl: String? = null,
 )
-
